@@ -44,6 +44,7 @@ class StickyNav {
       });
 
     this.onResize();
+    this.addSmoothScroll(); // Adding smooth scroll here
   }
 
   onResize() {
@@ -67,11 +68,79 @@ class StickyNav {
 
   }
 
+  // Smooth scroll function
+  addSmoothScroll() {
+    this.menuLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const sectionId = link.textContent.toLowerCase().trim();
+        const section = document.getElementById(sectionId);
+
+        if (section) {
+          e.preventDefault();
+          window.scrollTo({
+            top: section.offsetTop - NAV_OFFSET, // Adjusting for header height
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  }
+
   events() {
     window.addEventListener('load', () => { this.didRender(); });
     window.addEventListener('scroll', () => { this.onScroll(); });
     window.addEventListener('resize', () => { this.onResize(); });
   }
 }
+
+function slowScrollTo(element, duration) {
+  const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+  const startPosition = window.pageYOffset;
+  const distance = targetPosition - startPosition;
+  let startTime = null;
+
+  function animation(currentTime) {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run = ease(timeElapsed, startPosition, distance, duration);
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+  }
+
+  function ease(t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t * t + b;
+    t -= 2;
+    return c / 2 * (t * t * t + 2) + b;
+}
+
+  requestAnimationFrame(animation);
+}
+
+// Brug denne funktion ved klik
+function scrollToSection(event, sectionId) {
+  event.preventDefault();
+  const section = document.getElementById(sectionId);
+  if (section) {
+      slowScrollTo(section, 2000); // Varighed i millisekunder, her er det 2000ms (2 sekunder)
+  }
+}
+
+// Tilføj event listeners til hver menu link
+document.getElementById('who-link').addEventListener('click', (event) => {
+  scrollToSection(event, 'who');
+});
+
+document.getElementById('skills-link').addEventListener('click', (event) => {
+  scrollToSection(event, 'skills');
+});
+
+document.getElementById('resume-link').addEventListener('click', (event) => {
+  scrollToSection(event, 'resume');
+});
+
+document.getElementById('links-link').addEventListener('click', (event) => {
+  scrollToSection(event, 'links');
+});
 
 new StickyNav();

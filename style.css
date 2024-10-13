@@ -5,7 +5,9 @@
 img {
     width: 100%;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 h1, h2, h3, h4 , p, ul, li, a {
     font-family: "Roboto Flex";
     line-height: 1.8;
